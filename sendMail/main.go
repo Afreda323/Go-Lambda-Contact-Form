@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"regexp"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -37,6 +38,39 @@ func (ud UserData) Validate() (string, bool) {
 	return "Success", true
 }
 
+// GenStringEmail - Generate the email template for a user (String)
+func (ud UserData) GenStringEmail() string {
+	_, ok := ud.Validate()
+	if !ok {
+		return "Invalid User"
+	}
+
+	return fmt.Sprintf(`
+		Your form was submitted.
+		Name: %s
+		Email: %s
+		Message: %s
+	`, ud.Name, ud.Email, ud.Message)
+}
+
+// GenHTMLEmail - Generate the email template for a user (HTML)
+func (ud UserData) GenHTMLEmail() string {
+	_, ok := ud.Validate()
+	if !ok {
+		return "Invalid User"
+	}
+
+	return fmt.Sprintf(`
+		<h1>Your form was submitted.</h1>
+		<hr />
+		<p>
+			<b>Name:</b> %s <br />
+			<b>Email:</b> %s <br />
+			<b>Message:</b> %s <br />
+		</p>
+	`, ud.Name, ud.Email, ud.Message)
+}
+
 // Response - API gateway default res type
 type Response events.APIGatewayProxyResponse
 
@@ -47,6 +81,7 @@ type Message struct {
 }
 
 // LogEmailError - If error occurs when sending email, log it to the console
+// Codes taken directly from the docs
 func LogEmailError(err error) {
 	if aerr, ok := err.(awserr.Error); ok {
 		switch aerr.Code() {
@@ -65,7 +100,7 @@ func LogEmailError(err error) {
 }
 
 // SendEmail - Connect to AWS and send the email to the box.
-func SendEmail(ud *UserData, subject string, text string) (string, bool) {
+func SendEmail(ud *UserData, subject string, text string, html string) (string, bool) {
 	CharSet := "UTF-8"
 
 	sess, err := session.NewSession(&aws.Config{
@@ -77,7 +112,7 @@ func SendEmail(ud *UserData, subject string, text string) (string, bool) {
 	input := &ses.SendEmailInput{
 		Destination: &ses.Destination{
 			ToAddresses: []*string{
-				aws.String("anthonyfreda323@gmail.com"),
+				aws.String(os.Getenv("DESIRED_RECIPIENT")),
 			},
 		},
 		Message: &ses.Message{
@@ -86,13 +121,17 @@ func SendEmail(ud *UserData, subject string, text string) (string, bool) {
 					Charset: aws.String(CharSet),
 					Data:    aws.String(text),
 				},
+				Html: &ses.Content{
+					Charset: aws.String(CharSet),
+					Data:    aws.String(html),
+				},
 			},
 			Subject: &ses.Content{
 				Charset: aws.String(CharSet),
 				Data:    aws.String(subject),
 			},
 		},
-		Source: aws.String("anthonyfreda323@gmail.com"),
+		Source: aws.String(os.Getenv("DESIRED_RECIPIENT")),
 	}
 
 	result, err := svc.SendEmail(input)
@@ -102,7 +141,7 @@ func SendEmail(ud *UserData, subject string, text string) (string, bool) {
 		return "Something went wrong", false
 	}
 
-	fmt.Println("Email result", result)
+	fmt.Println("Email Result:", result)
 
 	return "Success", true
 }
@@ -120,7 +159,8 @@ func Handler(req events.APIGatewayProxyRequest) (Response, error) {
 	message, ok = SendEmail(
 		userData,
 		"Form Submission by "+userData.Name,
-		userData.Name+" "+userData.Email+" "+userData.Message,
+		userData.GenStringEmail(),
+		userData.GenHTMLEmail(),
 	)
 
 	if !ok {

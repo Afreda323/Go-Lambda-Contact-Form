@@ -10,6 +10,8 @@ provider:
       Action:
         - "ses:SendEmail"
       Resource: ["*"]
+  environment:
+    DESIRED_RECIPIENT: ${ssm:myEmail} # Pulls from local ssm, you can replace it with your AWS validated email
 
 package:
  exclude:
