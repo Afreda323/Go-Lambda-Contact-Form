@@ -5,4 +5,10 @@ A simple lambda that takes in a name, message and email address.  Sends an email
 ### Usage
 
 Make sure you have Go, Dep and Serverless installed.
-...Will explain the rest when it's done...
+```...Will explain the rest when it's done...```
+
+### Todo
+
+- Add CI/CD
+- Write tests
+- Code Cleanup/Restructure
