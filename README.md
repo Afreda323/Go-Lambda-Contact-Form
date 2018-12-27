@@ -12,3 +12,4 @@ Make sure you have Go, Dep and Serverless installed.
 - Add CI/CD
 - Write tests
 - Code Cleanup/Restructure
+- Possibly track users in DB to prevent spamming
