@@ -6,7 +6,7 @@ Unique emails are saved to DynamoDB, emails can only be submitted once per week 
 
 ### Usage
 
-Intall Serverless, [follow the installation instructions here](https://serverless.com/blog/anatomy-of-a-serverless-app/#setup).  Requires at least version v1.26 or later as that's the version that comes with Golang support.  You'll also need to [install Go](https://golang.org/doc/install) and it's dependency manager, [dep](https://github.com/golang/dep).
+Install Serverless, [follow the installation instructions here](https://serverless.com/blog/anatomy-of-a-serverless-app/#setup).  Requires at least version v1.26 or later as that's the version that comes with Golang support.  You'll also need to [install Go](https://golang.org/doc/install) and it's dependency manager, [dep](https://github.com/golang/dep).
 
 When both of those tasks are done, cd into your `GOPATH` (more than likely ~/go/src/) and clone this project into that folder.  Then cd into the resulting folder and compile the source with `make`:
 
