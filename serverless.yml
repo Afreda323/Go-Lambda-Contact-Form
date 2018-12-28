@@ -1,23 +1,35 @@
 service: email-service
 
-frameworkVersion: ">=1.28.0 <2.0.0"
+frameworkVersion: '>=1.28.0 <2.0.0'
 
 provider:
   name: aws
+  stage: ${opt:stage, "dev"}
   runtime: go1.x
   iamRoleStatements:
-    - Effect: "Allow"
+    - Effect: 'Allow'
       Action:
-        - "ses:SendEmail"
-      Resource: ["*"]
+        - 'ses:SendEmail'
+      Resource: ['*']
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: 'arn:aws:dynamodb:*:*:*'
   environment:
+    TABLE_NAME: emails-${opt:stage, "dev"}
     DESIRED_RECIPIENT: ${ssm:myEmail} # Pulls from local ssm, you can replace it with your AWS validated email
 
 package:
- exclude:
-   - ./**
- include:
-   - ./bin/**
+  exclude:
+    - ./**
+  include:
+    - ./bin/**
 
 functions:
   sendMail:
@@ -27,3 +39,23 @@ functions:
           path: sendMail
           method: post
           cors: true
+resources:
+  Resources:
+    EmailTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+          - AttributeName: name
+            AttributeType: S
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+          - AttributeName: name
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: 'emails-${opt:stage, "dev"}'
