@@ -59,6 +59,14 @@
   version = "v1.16.11"
 
 [[projects]]
+  branch = "master"
+  digest = "1:96b2228ec52e3129a311293afd1310cc4a4d8dd88c7370006c6f3e21d3ec03bb"
+  name = "github.com/grokify/html-strip-tags-go"
+  packages = ["."]
+  pruneopts = ""
+  revision = "e9e44961e26f513866063f54bf85070db95600f7"
+
+[[projects]]
   digest = "1:13fe471d0ed891e8544eddfeeb0471fd3c9f2015609a1c000aefdedf52a19d40"
   name = "github.com/jmespath/go-jmespath"
   packages = ["."]
@@ -77,6 +85,7 @@
     "github.com/aws/aws-sdk-go/service/dynamodb",
     "github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute",
     "github.com/aws/aws-sdk-go/service/ses",
+    "github.com/grokify/html-strip-tags-go",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

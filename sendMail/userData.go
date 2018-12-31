@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"time"
 
+	strip "github.com/grokify/html-strip-tags-go"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -49,7 +51,7 @@ func (ud UserData) GenStringEmail() string {
 		Name: %s
 		Email: %s
 		Message: %s
-	`, ud.Name, ud.Email, ud.Message)
+	`, strip.StripTags(ud.Name), strip.StripTags(ud.Email), strip.StripTags(ud.Message))
 }
 
 // GenHTMLEmail - Generate the email template for a user (HTML)
@@ -67,7 +69,7 @@ func (ud UserData) GenHTMLEmail() string {
 			<b>Email:</b> %s <br />
 			<b>Message:</b> %s <br />
 		</p>
-	`, ud.Name, ud.Email, ud.Message)
+	`, strip.StripTags(ud.Name), strip.StripTags(ud.Email), strip.StripTags(ud.Message))
 }
 
 // GetByEmail - Check the dynamoDB for the user by email

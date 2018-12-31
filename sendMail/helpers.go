@@ -19,16 +19,17 @@ func Respond(status int, message string) (events.APIGatewayProxyResponse, error)
 	resMessage.Status = status
 	resMessage.Message = message
 
+	resp := events.APIGatewayProxyResponse{Headers: make(map[string]string)}
+	resp.Headers["Access-Control-Allow-Origin"] = "*"
+	resp.Headers["Access-Control-Allow-Credentials"] = "true"
+	resp.StatusCode = status
+
 	json, err := json.Marshal(resMessage)
 	if err != nil {
-		return events.APIGatewayProxyResponse{
-			Body:       "Something went wrong",
-			StatusCode: status,
-		}, err
+		resp.Body = "Something went wrong"
+		return resp, nil
 	}
 
-	return events.APIGatewayProxyResponse{
-		Body:       string(json),
-		StatusCode: status,
-	}, nil
+	resp.Body = string(json)
+	return resp, nil
 }
