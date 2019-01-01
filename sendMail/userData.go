@@ -27,13 +27,13 @@ type UserData struct {
 
 // Validate that all values are present
 func (ud UserData) Validate() (string, bool) {
-	if len(ud.Name) < 3 {
+	if len(ud.Name) < 3 || len(ud.Message) > 100 {
 		return "Invalid Name", false
 	}
-	if !emailRegex.MatchString(ud.Email) {
+	if !emailRegex.MatchString(ud.Email) || len(ud.Message) > 300 {
 		return "Invalid Email", false
 	}
-	if len(ud.Message) < 10 {
+	if len(ud.Message) < 10 || len(ud.Message) > 300 {
 		return "Invalid Message", false
 	}
 	return "Success", true

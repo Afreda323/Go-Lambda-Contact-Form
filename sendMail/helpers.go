@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 )
@@ -20,7 +21,7 @@ func Respond(status int, message string) (events.APIGatewayProxyResponse, error)
 	resMessage.Message = message
 
 	resp := events.APIGatewayProxyResponse{Headers: make(map[string]string)}
-	resp.Headers["Access-Control-Allow-Origin"] = "*"
+	resp.Headers["Access-Control-Allow-Origin"] = os.Getenv("ALLOWED_DOMAIN")
 	resp.Headers["Access-Control-Allow-Credentials"] = "true"
 	resp.StatusCode = status
 

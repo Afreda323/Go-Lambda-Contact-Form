@@ -2,6 +2,11 @@ service: email-service
 
 frameworkVersion: '>=1.28.0 <2.0.0'
 
+custom:
+    client: #replace with yours
+      dev: https://dev--antfreda-com.netlify.com #replace with yours
+      prod: https://antfreda.com #replace with yours
+
 provider:
   name: aws
   stage: ${opt:stage, "dev"}
@@ -24,6 +29,7 @@ provider:
   environment:
     TABLE_NAME: emails-${opt:stage, "dev"}
     DESIRED_RECIPIENT: ${ssm:myEmail} # Pulls from local ssm, you can replace it with your AWS validated email
+    ALLOWED_DOMAIN: ${self:custom.client.${opt:stage, self:provider.stage}} 
 
 package:
   exclude:
